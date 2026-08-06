@@ -25,6 +25,8 @@ function extractFrontmatter(markdown: string) {
   return { data, body };
 }
 
+import { createMarkdownProcessor } from '@astrojs/markdown-remark';
+
 export function githubLoader(): Loader {
   return {
     name: 'github-loader',
@@ -41,6 +43,8 @@ export function githubLoader(): Loader {
       const items = await res.json();
       const dirs = items.filter((item: any) => item.type === 'dir' && /^\d{2}-\d{2}-\d{4}$/.test(item.name));
       
+      const processor = await createMarkdownProcessor();
+
       for (const dir of dirs) {
         const fileUrl = `https://raw.githubusercontent.com/deepeshx9/project-volterra/main/DayLogs/${dir.name}/log.md`;
         const fileRes = await fetch(fileUrl);
@@ -67,10 +71,16 @@ export function githubLoader(): Loader {
         
         const data = await parseData({ id: dir.name, data: rawData });
         
+        // Convert Markdown body to HTML using Astro's built-in processor
+        const result = await processor.render(body);
+        
         store.set({
           id: dir.name,
           data,
           body,
+          rendered: {
+            html: result.code,
+          }
         });
       }
       logger.info(`Successfully loaded ${dirs.length} DayLogs from GitHub.`);
