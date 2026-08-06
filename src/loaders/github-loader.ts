@@ -83,6 +83,39 @@ export function githubLoader(): Loader {
           }
         });
       }
+      // Fetch the pinned DEVLOG
+      try {
+        logger.info('Fetching pinned DEVLOG...');
+        const devlogUrl = 'https://raw.githubusercontent.com/deepeshx9/lenovo-yoga-slim7x-audio-linux/main/.github/DEVLOG.md';
+        const devlogRes = await fetch(devlogUrl);
+        if (devlogRes.ok) {
+          const body = await devlogRes.text();
+          const rawData = {
+            title: 'lenovo-yoga-slim7x-audio-linux DEVLOG',
+            date: new Date('2026-04-06'), // Date of the findings
+            status: 'PINNED',
+            pinned: true
+          };
+          
+          const data = await parseData({ id: 'lenovo-yoga-devlog', data: rawData });
+          const result = await processor.render(body);
+          
+          store.set({
+            id: 'lenovo-yoga-devlog',
+            data,
+            body,
+            rendered: {
+              html: result.code,
+            }
+          });
+          logger.info('Successfully loaded pinned DEVLOG.');
+        } else {
+          logger.warn(`Failed to fetch pinned DEVLOG: ${devlogRes.statusText}`);
+        }
+      } catch (err) {
+        logger.error(`Error fetching pinned DEVLOG: ${err}`);
+      }
+
       logger.info(`Successfully loaded ${dirs.length} DayLogs from GitHub.`);
     }
   };
