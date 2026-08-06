@@ -9,6 +9,7 @@ const devlogCollection = defineCollection({
     title: z.string(),
     date: z.date(),
     status: z.string().default('ONLINE'),
+    pinned: z.boolean().default(false),
   }),
 });
 

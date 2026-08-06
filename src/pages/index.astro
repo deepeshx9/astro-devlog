@@ -4,7 +4,11 @@ import '../styles/global.css';
 
 // Fetch all markdown files and sort them by date (newest first)
 const allLogs = await getCollection('devlog');
-const sortedLogs = allLogs.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const sortedLogs = allLogs.sort((a, b) => {
+  if (a.data.pinned && !b.data.pinned) return -1;
+  if (!a.data.pinned && b.data.pinned) return 1;
+  return b.data.date.valueOf() - a.data.date.valueOf();
+});
 ---
 
 <html lang="en">
@@ -94,8 +98,9 @@ const sortedLogs = allLogs.sort((a, b) => b.data.date.valueOf() - a.data.date.va
           {sortedLogs.map((log) => (
             <li class="flex items-center gap-4 group">
               <span class="text-white text-xs">[{log.data.date.toISOString().split('T')[0]}]</span>
-                  <a href={`/log/${log.id}`} class="text-cyan-400 hover:text-white hover:bg-cyan-900 px-2 py-1 transition-colors block w-full border-l border-transparent group-hover:border-cyan-400">
-  >                {log.data.title}
+                  <a href={`/log/${log.id}`} class="text-cyan-400 hover:text-white hover:bg-cyan-900 px-2 py-1 transition-colors block w-full border-l border-transparent group-hover:border-cyan-400 flex items-center justify-between">
+                    <span>&gt; {log.data.title}</span>
+                    {log.data.pinned && <span class="text-[9px] bg-cyan-900/80 text-cyan-200 px-1.5 py-0.5 ml-2 uppercase tracking-widest border border-cyan-500/30">Pinned</span>}
                   </a>
             </li>
           ))}
