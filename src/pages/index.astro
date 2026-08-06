@@ -93,7 +93,7 @@ const sortedLogs = allLogs.sort((a, b) => b.data.date.valueOf() - a.data.date.va
         <ul class="space-y-2">
           {sortedLogs.map((log) => (
             <li class="flex items-center gap-4 group">
-              <span class="text-cyan-800 text-xs">[{log.data.date.toISOString().split('T')[0]}]</span>
+              <span class="text-white text-xs">[{log.data.date.toISOString().split('T')[0]}]</span>
                   <a href={`/log/${log.id}`} class="text-cyan-400 hover:text-white hover:bg-cyan-900 px-2 py-1 transition-colors block w-full border-l border-transparent group-hover:border-cyan-400">
   >                {log.data.title}
                   </a>
